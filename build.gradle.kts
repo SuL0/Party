@@ -9,6 +9,7 @@ version = "1.0-SNAPSHOT"
 repositories {
     mavenCentral()
     maven("https://papermc.io/repo/repository/maven-public/")
+    maven("https://jitpack.io")
     mavenLocal()
 }
 
@@ -19,7 +20,7 @@ dependencies {
     compileOnly("org.spigotmc", "spigot", "1.12.2-R0.1-SNAPSHOT")
 
     compileOnly(files("$pluginStorage/Dependencies/GlowAPI_v1.4.6_S.jar"))
-    compileOnly(files("$pluginStorage/Dependencies/tablist-1.6-SNAPSHOT.jar"))
+    compileOnly(files("$pluginStorage/Dependencies/Tabbed.jar"))
 
     testImplementation("com.github.seeseemelk", "MockBukkit-v1.13-spigot", "0.2.0")
 }
@@ -42,8 +43,15 @@ tasks {
     compileKotlin.get().kotlinOptions.jvmTarget = "1.8"
     compileTestKotlin.get().kotlinOptions.jvmTarget = "1.8"
 
+    val copyPlugin = register<Copy>("copyPlugin") {
+        from(files("$pluginStorage/${project.name}_S.jar"))
+        into(file("C:/Users/PHR/Desktop/SERVER2/plugins"))
+    }
+
     jar {
         archiveFileName.set("${project.name}_S.jar")
         destinationDirectory.set(file(pluginStorage))
+
+        finalizedBy(copyPlugin)
     }
 }
