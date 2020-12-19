@@ -1,8 +1,8 @@
 package kr.sul.party.party
 
 import kr.sul.party.MessageManager
+import kr.sul.party.MessageManager.PREFIX
 import kr.sul.party.partyplayer.PartyPlayer
-import org.bukkit.Bukkit
 import org.inventivetalent.glow.GlowAPI
 
 class Party(var leader: PartyPlayer) {
@@ -18,7 +18,7 @@ class Party(var leader: PartyPlayer) {
     fun addMember(memberToJoin: PartyPlayer) {
         if (members.size >= MAX_MEMBERS_NUM) return
         members.forEach {
-            it.player.sendMessage(MessageManager.SOMEONE_JOINED_PARTY.replace("{Opponent}", memberToJoin.player.name))
+            it.sendMessage(MessageManager.SOMEONE_JOINED_PARTY.replace("{Opponent}", memberToJoin.player.name))
         }
         members.add(memberToJoin)
         membersKillDeath[memberToJoin] = MemberKillDeath(memberToJoin)
@@ -29,8 +29,12 @@ class Party(var leader: PartyPlayer) {
         GlowAPI.setGlowing(members.filter { it != memberToJoin }.map { it.player }, GlowAPI.Color.GREEN, memberToJoin.player)
     }
 
-    fun kickMember(memberToKick: PartyPlayer) {
-        // 추방 메세지
+    fun kickMember(executor: PartyPlayer, memberToKick: PartyPlayer) {
+        if (!executor.isLeader()) { executor.sendMessage(MessageManager.YOU_ARE_NOT_A_LEADER); return }
+        if (!members.contains(memberToKick)) { executor.sendMessage(MessageManager.OPPONENT_IS_NOT_IN_YOUR_PARTY); return }
+        if (executor == memberToKick) { executor.sendMessage("$PREFIX 자기 자신을 강퇴할 수 없습니다"); return }
+
+        memberToKick.sendMessage("$PREFIX 파티에서 §c강퇴§f되었습니다.")
         onPlayerLeave(memberToKick)
     }
 
@@ -42,7 +46,7 @@ class Party(var leader: PartyPlayer) {
 
         if (!bPartyDestroyed) {
             members.forEach {
-                it.player.sendMessage(MessageManager.SOMEONE_LEAVED_PARTY.replace("{Opponent}", memberToLeave.player.name))
+                it.sendMessage(MessageManager.SOMEONE_LEAVED_PARTY.replace("{Opponent}", memberToLeave.player.name))
             }
             if (this.members.size < 2) {
                 this.destroy(); return   // 파티 해체
@@ -50,7 +54,7 @@ class Party(var leader: PartyPlayer) {
             if (leader == memberToLeave) {
                 // 파티 리더 위임(랜덤)
                 leader = members.random()
-                leader.player.sendMessage(MessageManager.RECEIVED_PARTY_LEADER)
+                leader.sendMessage(MessageManager.RECEIVED_PARTY_LEADER)
             }
         }
     }
@@ -58,7 +62,7 @@ class Party(var leader: PartyPlayer) {
     private fun destroy() {
         val clonedMembers = ArrayList(members)  // onPlayerLeave에서 members를 건드려버려서, members를 clone 해야 함
         clonedMembers.forEach {
-            it.player.sendMessage(MessageManager.PARTY_DESTROYED)
+            it.sendMessage(MessageManager.PARTY_DESTROYED)
             onPlayerLeave(it, true)
         }
     }
