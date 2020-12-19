@@ -1,19 +1,12 @@
 package kr.sul.party.command
 
 import kr.sul.party.MessageManager
-import kr.sul.party.MessageManager.PREFIX
-import kr.sul.party.command.subcommand.ChatMode
-import kr.sul.party.command.subcommand.Info
+import kr.sul.party.command.subcommand.*
 import kr.sul.party.partyplayer.PartyPlayerManager.getPartyPlayer
-import kr.sul.party.tab.TablistGeneratorImpl
-import kr.sul.party.tab.TablistUpdaterImpl
-import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.inventivetalent.glow.GlowAPI
-import pl.mnekos.tablist.TablistManager
 
 object PartyCommand: CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
@@ -24,38 +17,22 @@ object PartyCommand: CommandExecutor {
         val partyPlayer = getPartyPlayer(p)
         when(args[0]) {
             "초대" -> {
-                if (args.size != 2) { sendHelpMessageWhenArgIsWrong(p, label, args); return true }
-                if (Bukkit.getPlayerExact(args[1]) != null) {
-                    val opponent = getPartyPlayer(Bukkit.getPlayerExact(args[1]))
-                    partyPlayer.invite(opponent)
-                } else {
-                    p.sendMessage("$PREFIX §f유저 '${args[1]}' 를 찾을 수 없습니다.")
-                }
+                InviteCommand.onCommand(p, partyPlayer, label, args)
             }
             "초대장" -> {
-                if (args.size != 3) { sendHelpMessageWhenArgIsWrong(p, label, args); return true }
-                if (args[1] == "수락") {
-                    partyPlayer.acceptInvitation(args[2])
-                } else if (args[1] == "거절") {
-                    partyPlayer.denyInvitation(args[2])
-                }
+                InvitationCommand.onCommand(p, partyPlayer, label, args)
             }
             "채팅" -> {
-                ChatMode.onCommand(p, partyPlayer, label, args)
+                ChatModeCommand.onCommand(p, partyPlayer, label, args)
             }
             "탈퇴" -> {
-                if (args.size != 1) { sendHelpMessageWhenArgIsWrong(p, label, args); return true }
-                partyPlayer.leaveParty()
+                LeaveCommand.onCommand(p, partyPlayer, label, args)
             }
             "강퇴" -> {
-                if (args.size != 2) { sendHelpMessageWhenArgIsWrong(p, label, args); return true }
+                KickCommand.onCommand(p, partyPlayer, label, args)
             }
             "정보" -> {
-                Info.onCommand(p, partyPlayer, label, args)
-            }
-            "tab" -> {
-                val tabListManager = TablistManager(TablistGeneratorImpl, TablistUpdaterImpl)
-                tabListManager.createTablist(p)
+                InfoCommand.onCommand(p, partyPlayer, label, args)
             }
             else -> sendHelpMessageWhenArgIsWrong(p, label, args)
         }

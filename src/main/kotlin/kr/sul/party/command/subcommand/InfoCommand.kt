@@ -6,7 +6,7 @@ import kr.sul.party.party.Party
 import kr.sul.party.partyplayer.PartyPlayer
 import org.bukkit.entity.Player
 
-object Info : PartySubCommand {
+object InfoCommand : PartySubCommand {
     override fun onCommand(p: Player, partyPlayer: PartyPlayer, label: String, args: Array<String>) {
         if (args.size != 1) { PartyCommand.sendHelpMessageWhenArgIsWrong(p, label, args); return }
         if (!partyPlayer.isInParty()) { p.sendMessage(MessageManager.YOU_ARE_NOT_IN_PARTY); return }
