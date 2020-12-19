@@ -57,8 +57,8 @@ class Invitation(val sender: PartyPlayer, val receiver: PartyPlayer) {
             add(TextComponent("  §7§o< Click"))
             this
         }
-        receiver.player.sendMessage(*jsonMsg.toTypedArray())
-        receiver.player.sendMessage("- §7${VALIDITY_PERIOD}초 뒤에 자동 거절됩니다.")
+        receiver.sendMessage(*jsonMsg.toTypedArray())
+        receiver.sendMessage("- §7${VALIDITY_PERIOD}초 뒤에 자동 거절됩니다.")
     }
 
 
@@ -87,14 +87,14 @@ class Invitation(val sender: PartyPlayer, val receiver: PartyPlayer) {
     }
 
     fun deny() {
-        sender.player.sendMessage(MessageManager.YOUR_INVITATION_HAS_DENIED.replace("{Receiver}", receiver.player.name))
-        receiver.player.sendMessage(MessageManager.RECEIVED_INVITATION_DENIED_AUTOMATICALLY.replace("{Opponent}", sender.player.name))
+        sender.sendMessage(MessageManager.YOUR_INVITATION_HAS_DENIED.replace("{Receiver}", receiver.player.name))
+        receiver.sendMessage(MessageManager.RECEIVED_INVITATION_DENIED_AUTOMATICALLY.replace("{Opponent}", sender.player.name))
         receiver.receivedInvitation.remove(this)
         processed = true
     }
     private fun sendInvitationCannotBeProcessedMessage(reason: String) {
-        receiver.player.sendMessage(MessageManager.INVITATION_CANNOT_BE_PROCESSED_1)
-        receiver.player.sendMessage(MessageManager.INVITATION_CANNOT_BE_PROCESSED_2.replace("{Reason}", reason))
+        receiver.sendMessage(MessageManager.INVITATION_CANNOT_BE_PROCESSED_1)
+        receiver.sendMessage(MessageManager.INVITATION_CANNOT_BE_PROCESSED_2.replace("{Reason}", reason))
     }
 
 }

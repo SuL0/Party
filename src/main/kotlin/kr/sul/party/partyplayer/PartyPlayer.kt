@@ -3,6 +3,7 @@ package kr.sul.party.partyplayer
 import kr.sul.party.MessageManager
 import kr.sul.party.party.Invitation
 import kr.sul.party.party.Party
+import net.md_5.bungee.api.chat.BaseComponent
 import org.bukkit.entity.Player
 
 class PartyPlayer(val player: Player) {
@@ -29,32 +30,38 @@ class PartyPlayer(val player: Player) {
     fun acceptInvitation(arg1uuid: String) {
         if (receivedInvitation.map { it.uuid }.contains(arg1uuid)) {
             val invitation = receivedInvitation.first { it.uuid == arg1uuid }
-            this.player.sendMessage(MessageManager.ACCEPT_RECEIVED_INVITATION.replace("{Sender}", invitation.sender.player.name))
+            this.sendMessage(MessageManager.ACCEPT_RECEIVED_INVITATION.replace("{Sender}", invitation.sender.player.name))
             receivedInvitation.remove(invitation)
             invitation.accept()
         } else {
-            this.player.sendMessage(MessageManager.DONT_HAVE_SUCH_INVITATION.replace("{Arg1}", arg1uuid))
+            this.sendMessage(MessageManager.DONT_HAVE_SUCH_INVITATION.replace("{Arg1}", arg1uuid))
         }
     }
     fun denyInvitation(arg1uuid: String) {
         if (receivedInvitation.map { it.uuid }.contains(arg1uuid)) {
             val invitation = receivedInvitation.first { it.uuid == arg1uuid }
-            this.player.sendMessage(MessageManager.DENY_RECEIVED_INVITATION.replace("{Sender}", invitation.sender.player.name))
+            this.sendMessage(MessageManager.DENY_RECEIVED_INVITATION.replace("{Sender}", invitation.sender.player.name))
             receivedInvitation.remove(invitation)
             invitation.deny()
         } else {
-            this.player.sendMessage(MessageManager.DONT_HAVE_SUCH_INVITATION.replace("{Arg1}", arg1uuid))
+            this.sendMessage(MessageManager.DONT_HAVE_SUCH_INVITATION.replace("{Arg1}", arg1uuid))
         }
     }
 
     // 탈퇴 //
     fun leaveParty() {
         if (isInParty()) {
-            this.player.sendMessage(MessageManager.LEAVE_PARTY)
+            this.sendMessage(MessageManager.LEAVE_PARTY)
             this.joinedParty!!.onPlayerLeave(this)
         } else {
-            this.player.sendMessage(MessageManager.YOU_ARE_NOT_IN_PARTY)
+            this.sendMessage(MessageManager.YOU_ARE_NOT_IN_PARTY)
         }
     }
 
+    fun sendMessage(message: String) {
+        player.sendMessage(message)
+    }
+    fun sendMessage(vararg components: BaseComponent) {
+        player.sendMessage(*components)
+    }
 }
